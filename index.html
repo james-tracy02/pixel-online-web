@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>pixel-online</title>
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+  <div class="container">
+    <div>
+    <canvas id="canvas" width=800 height=600 style="border: 1px solid black;"></canvas>
+    </div>
+    <div>
+    <label>Zoom: </label>
+    <input type="text" size="3" value="20" onchange="zoomChange(event)"></input>
+    <br />
+    <br />
+    <label>xOff: </label>
+    <input type="text" size="4" value="0" onchange="xOffChange(event)"></input>
+    <br />
+    <br />
+    <label>yOff: </label>
+    <input type="text" size="4" value="0" onchange="yOffChange(event)"></input>
+    <br />
+    <br />
+    <label>Color: </label>
+    <input id="color" type="text" size="7" value="#000000"></input>
+    </div>
+  </div>
+  <script src="pixels.js"></script>
+</body>
+</html>
