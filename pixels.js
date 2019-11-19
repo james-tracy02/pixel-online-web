@@ -11,18 +11,26 @@ canvas.width = WIDTH;
 canvas.height = HEIGHT;
 
 canvas.addEventListener('mousedown', handleClick, false);
+canvas.addEventListener('mousemove', handleMouse, false);
 fetchPixels();
 setInterval(fetchPixels, 3000);
+
+let savedPixels = [];
+let highlightPos = null;
 
 function fetchPixels() {
   fetch(`${url}/pixels`)
   .then((res) => res.json())
-  .then((pixels) => drawPixels(pixels));
+  .then((pixels) => {
+    savedPixels = pixels;
+    drawPixels(pixels)
+  });
 }
 
 function drawPixels(pixels) {
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
   pixels.forEach((pixel) => drawPixel(pixel));
+  drawHighlight();
 }
 
 function drawPixel(pixel) {
@@ -43,7 +51,22 @@ function handleClick(event) {
   };
 
   fetch(`${url}/pixels/${coords.x}/${coords.y}`, ops)
-  .then((res) => fetchPixels());
+  .then((res) => fetchPixels())
+  .then(() => highlight(coords));
+}
+
+function handleMouse(event) {
+  const mousePos = getMousePos(event);
+  const coords = getCoords(mousePos);
+  highlightPos = coords;
+  drawPixels(savedPixels);
+}
+
+function drawHighlight() {
+  ctx.strokeStyle = "#000000";
+  ctx.beginPath();
+  ctx.rect((highlightPos.x - xOff)*zoom, (highlightPos.y - yOff)*zoom, zoom, zoom);
+  ctx.stroke();
 }
 
 function getColor() {
@@ -90,7 +113,7 @@ function getMousePos(event) {
 
 function getCoords(mousePos) {
   return {
-    x: Math.floor(mousePos.x/zoom) + xOff,
-    y: Math.floor(mousePos.y/zoom) + yOff,
+    x: Math.floor(mousePos.x/zoom) + parseInt(xOff),
+    y: Math.floor(mousePos.y/zoom) + parseInt(yOff),
   };
 }
