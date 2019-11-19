@@ -10,7 +10,7 @@ let yOff = 0;
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
 
-canvas.addEventListener('click', handleClick, false);
+canvas.addEventListener('mousedown', handleClick, false);
 fetchPixels();
 setInterval(fetchPixels, 3000);
 
