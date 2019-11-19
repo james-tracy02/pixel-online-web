@@ -90,7 +90,7 @@ function getMousePos(event) {
 
 function getCoords(mousePos) {
   return {
-    x: Math.floor(mousePos.x/zoom),
-    y: Math.floor(mousePos.y/zoom),
+    x: Math.floor(mousePos.x/zoom) + xOff,
+    y: Math.floor(mousePos.y/zoom) + yOff,
   };
 }
