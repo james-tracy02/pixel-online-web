@@ -7,7 +7,13 @@ let zoom = 20;
 let xOff = 0;
 let yOff = 0;
 let color = "#4d80c9";
-const colors = 
+let savedPixels = [];
+let highlightPos = null;
+const colors =
+["#ffffff", "#ffd19d", "#aeb5bd", "#4d80c9",
+ "#e93841", "#100820", "#511e43", "#054494",
+ "f1892d", "#823e2c", "#ffa9a9", "#5ae150",
+ "#ffe947", "#7d3ebf", "#eb6c82", "#1e8a4c"]
 
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
@@ -26,8 +32,7 @@ colors.forEach((color) => {
   colorDiv.appendChild(newDiv)
 });
 
-let savedPixels = [];
-let highlightPos = null;
+
 
 
 function setColor(newColor) {
