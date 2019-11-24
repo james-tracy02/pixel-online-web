@@ -6,6 +6,8 @@ const HEIGHT = 600;
 let zoom = 20;
 let xOff = 0;
 let yOff = 0;
+let color = "#4d80c9";
+const colors = 
 
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
@@ -14,9 +16,25 @@ canvas.addEventListener('mousedown', handleClick, false);
 canvas.addEventListener('mousemove', handleMouse, false);
 fetchPixels();
 setInterval(fetchPixels, 3000);
+const colorDiv = document.getElementById("colors");
+
+colors.forEach((color) => {
+  const newDiv = document.createElement("DIV");
+  newDiv.className = "color-div";
+  newDiv.style = "background-color: " + color + ";";
+  newDiv.onclick = () => setColor(color);
+  colorDiv.appendChild(newDiv)
+});
 
 let savedPixels = [];
 let highlightPos = null;
+
+
+function setColor(newColor) {
+  console.log("hi")
+  console.log(newColor);
+  color = newColor;
+}
 
 function fetchPixels() {
   fetch(`${url}/pixels`)
@@ -28,7 +46,8 @@ function fetchPixels() {
 }
 
 function drawPixels(pixels) {
-  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
   pixels.forEach((pixel) => drawPixel(pixel));
   drawHighlight();
 }
@@ -70,12 +89,7 @@ function drawHighlight() {
 }
 
 function getColor() {
-  const colorField = document.getElementById("color");
-  if(colorField.value) {
-    return colorField.value;
-  } else {
-    return "#000000";
-  }
+  return color;
 }
 
 function handleKey(event) {
