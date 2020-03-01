@@ -5,30 +5,18 @@
   <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
-  <div class="container">
-    <div>
-    <canvas id="canvas" width=800 height=600 style="border: 1px solid black;"></canvas>
-    </div>
-    <div>
-      <br />
-      <br />
-      <label>Zoom: </label>
-      <input type="text" size="3" value="20" onchange="zoomChange(event)"></input>
-      <br />
-      <br />
-      <label>xOff: </label>
-      <input type="text" size="4" value="0" onchange="xOffChange(event)"></input>
-      <br />
-      <br />
-      <label>yOff: </label>
-      <input type="text" size="4" value="0" onchange="yOffChange(event)"></input>
-      <br />
-      <br />
-      <label>Color: </label>
-      <div id="colors">
-      </div>
+  <div>
+    <div id="chat">
+      <canvas id="canvas">
+      </canvas>
+      <canvas id="hcanvas">
+      </canvas>
     </div>
   </div>
-  <script src="pixels.js"></script>
+  <div id="tools">
+    Move the canvas with WASD. Zoom with mouse wheel.<br /><br />
+    Color: <input id="color-picker" type="text" value="#000000" />
+  </div>
+  <script src="./pixels.js"></script>
 </body>
 </html>
