@@ -21,7 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.2';
+const VERSION = '1.0.3';
 
 const speed = 16;
 
@@ -249,9 +249,15 @@ function takePixel(x, y) {
   colorPicker.value = rgbToHex(color);
 }
 
-function rgbToHex(rgb){
-  return '#' + ((rgb[0] << 16) | (rgb[1] << 8) | rgb[2]).toString(16);
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
 }
+
+function rgbToHex(rgb) {
+  return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
+}
+
 
 hcanvas.addEventListener('mouseenter', (evt) => {
   hcanvas.focus();
