@@ -5,8 +5,8 @@ const hcanvas = document.getElementById('hcanvas');
 const hctx = hcanvas.getContext('2d');
 const ocanvas = document.createElement('canvas');
 const octx = ocanvas.getContext('2d');
-ocanvas.width = 200;
-ocanvas.height = 200;
+ocanvas.width = 1920;
+ocanvas.height = 1080;
 
 const url = "https://pixel-online.herokuapp.com";
 const bgdiv = document.getElementById('canvas-bg');
@@ -21,6 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
+const VERSION = '1.0.2';
 
 const speed = 16;
 
@@ -271,7 +272,7 @@ function download() {
 };
 
 document.getElementById('save').addEventListener('click', download, false);
-document.getElementById('version').innerHTML =  '(Version 1.0.1)';
+document.getElementById('version').innerHTML =  `(Version ${VERSION})`;
 
 hcanvas.addEventListener('mousemove', setMouseCoords);
 hcanvas.addEventListener('mouseleave', unsetMouseCoords);
