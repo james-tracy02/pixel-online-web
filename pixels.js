@@ -35,7 +35,6 @@ const keyStates = {
   d: false,
 };
 
-
 let lastMouseEvent = { clientX: 0, clientY: 0 };
 let mouseCoords = null;
 let prevCoords = null;
@@ -65,6 +64,7 @@ function drawPixels(pixels) {
 function oob(x, y) {
   return x < 0 || x > ocanvas.width || y < 0 || y > ocanvas.height;
 }
+
 function drawPixel(pixel) {
   if(oob(pixel.x, pixel.y)) return;
   const xPos = pixel.x * zoom - xOff;
@@ -95,8 +95,17 @@ function draw() {
   drawHighlight();
 }
 
+function loadPixels() {
+  return fetch(`${url}/pixels`)
+  .then((res) => res.json())
+  .then((newPixels) => {
+    pixels = newPixels;
+    draw();
+  });
+}
 
 function fetchPixels() {
+  const i = localPixels.length;
   const data = { pixels: localPixels };
   const ops = {
     headers: {
@@ -108,7 +117,8 @@ function fetchPixels() {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
-    pixels = newPixels;
+    pixels = newPixels.concat(localPixels);
+    localPixels.splice(0, i);
     draw();
   });
 }
@@ -247,6 +257,7 @@ function download() {
     var dt = ocanvas.toDataURL('image/png');
     this.href = dt;
 };
+
 document.getElementById('save').addEventListener('click', download, false);
 
 hcanvas.addEventListener('mousemove', setMouseCoords);
@@ -259,6 +270,6 @@ hcanvas.addEventListener('wheel', zoomCanvas);
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
-fetchPixels();
+loadPixels();
 setInterval(fetchPixels, 3000);
 window.requestAnimationFrame(moveCanvas);
