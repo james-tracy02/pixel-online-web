@@ -189,10 +189,13 @@ function up(mouseEvent) {
 }
 
 function downCanvas(mouseEvent) {
-  if(mouseEvent.button !== 0) return;
   const coords = getCoords(mouseEvent);
-  fillPixel(coords.x, coords.y, colorPicker.value);
-  drawHighlight();
+  if(mouseEvent.button === 0) {
+    fillPixel(coords.x, coords.y, colorPicker.value);
+    drawHighlight();
+  } else if (mouseEvent.button === 2) {
+    takePixel(coords.x, coords.y);
+  }
 }
 
 function moveCanvas() {
@@ -240,6 +243,15 @@ function handleKey(keyEvent, down) {
   }
 }
 
+function takePixel(x, y) {
+  const color = octx.getImageData(x, y, 1, 1).data;
+  colorPicker.value = rgbToHex(color);
+}
+
+function rgbToHex(rgb){
+  return '#' + ((rgb[0] << 16) | (rgb[1] << 8) | rgb[2]).toString(16);
+}
+
 hcanvas.addEventListener('mouseenter', (evt) => {
   hcanvas.focus();
   setMouseCoords(evt);
@@ -266,7 +278,6 @@ hcanvas.addEventListener('mousedown', downCanvas);
 hcanvas.addEventListener('keydown', (evt) => handleKey(evt, true));
 hcanvas.addEventListener('keyup', (evt) => handleKey(evt, false));
 hcanvas.addEventListener('wheel', zoomCanvas);
-
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
