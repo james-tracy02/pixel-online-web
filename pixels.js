@@ -271,6 +271,7 @@ function download() {
 };
 
 document.getElementById('save').addEventListener('click', download, false);
+document.getElementById('version').innerHTML =  '(Version 1.0.1)';
 
 hcanvas.addEventListener('mousemove', setMouseCoords);
 hcanvas.addEventListener('mouseleave', unsetMouseCoords);
