@@ -21,13 +21,13 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.4';
+const VERSION = '1.0.4_1';
 
 const speed = 16;
 
-let xOff = 0;
-let yOff = 0;
 let zoom = 10;
+let xOff = Math.ceil(canvas.width/(2*zoom));
+let yOff = Math.ceil(canvas.height/(2*zoom));
 
 const keyStates = {
   w: false,
