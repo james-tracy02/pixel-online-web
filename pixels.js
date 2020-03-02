@@ -5,8 +5,8 @@ const hcanvas = document.getElementById('hcanvas');
 const hctx = hcanvas.getContext('2d');
 const ocanvas = document.createElement('canvas');
 const octx = ocanvas.getContext('2d');
-ocanvas.width = 2000;
-ocanvas.height = 2000;
+ocanvas.width = 200;
+ocanvas.height = 200;
 
 const url = "https://pixel-online.herokuapp.com";
 const bgdiv = document.getElementById('canvas-bg');
@@ -20,7 +20,7 @@ hcanvas.focus();
 const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
-const MIN_ZOOM = 10;
+const MIN_ZOOM = 1;
 
 const speed = 16;
 
@@ -108,7 +108,6 @@ function fetchPixels() {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
-    console.log('fetched');
     pixels = newPixels;
     draw();
   });
@@ -243,6 +242,12 @@ function zoomCanvas(wheelEvent) {
   drawHighlight();
   setImage();
 }
+
+function download() {
+    var dt = ocanvas.toDataURL('image/png');
+    this.href = dt;
+};
+document.getElementById('save').addEventListener('click', download, false);
 
 hcanvas.addEventListener('mousemove', setMouseCoords);
 hcanvas.addEventListener('mouseleave', unsetMouseCoords);
