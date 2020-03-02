@@ -3,7 +3,13 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const hcanvas = document.getElementById('hcanvas');
 const hctx = hcanvas.getContext('2d');
+const ocanvas = document.createElement('canvas');
+const octx = ocanvas.getContext('2d');
+ocanvas.width = 2000;
+ocanvas.height = 2000;
+
 const url = "https://pixel-online.herokuapp.com";
+const bgdiv = document.getElementById('canvas-bg');
 canvas.width = window.innerWidth * .8;
 canvas.height = window.innerHeight * .8;
 hcanvas.width = window.innerWidth * .8;
@@ -14,80 +20,101 @@ hcanvas.focus();
 const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
-const MAX_LOCAL = 100;
+const MIN_ZOOM = 10;
+
+const speed = 16;
 
 let xOff = 0;
 let yOff = 0;
-let zoom = 20;
+let zoom = 10;
 
+const keyStates = {
+  w: false,
+  a: false,
+  s: false,
+  d: false,
+};
+
+
+let lastMouseEvent = { clientX: 0, clientY: 0 };
 let mouseCoords = null;
 let prevCoords = null;
 let mouseDown = false;
-let pixels = [];
 let localPixels = [];
-let resolved = 0;
+let pixels = [];
 
+
+function setImage() {
+  const xScale = ocanvas.width * zoom;
+  const yScale = ocanvas.height * zoom;
+  ctx.globalCompositeOperation = "copy";
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(ocanvas, -xOff, -yOff, xScale, yScale);
+  ctx.globalCompositeOperation = "source-over"
+}
+
+function drawPixels(pixels) {
+  let i;
+  for(i = 0; i < pixels.length; i += 1) {
+    const pixel = pixels[i];
+    octx.fillStyle = pixel.color;
+    octx.fillRect(pixel.x, pixel.y, 1, 1);
+  }
+}
+
+function oob(x, y) {
+  return x < 0 || x > ocanvas.width || y < 0 || y > ocanvas.height;
+}
 function drawPixel(pixel) {
-  if(!pixel) return;
-  const xPos = (pixel.x - xOff)*zoom;
-  const yPos = (pixel.y - yOff)*zoom;
-  if(xPos < 0 - zoom || xPos > canvas.width || yPos < 0 - zoom || yPos > canvas.height) return;
+  if(oob(pixel.x, pixel.y)) return;
+  const xPos = pixel.x * zoom - xOff;
+  const yPos = pixel.y * zoom - yOff;
   ctx.fillStyle = pixel.color;
   ctx.fillRect(xPos, yPos, zoom, zoom);
+  octx.fillStyle = pixel.color;
+  octx.fillRect(pixel.x, pixel.y, 1, 1);
 }
 
 function drawHighlight() {
   hctx.clearRect(0, 0, hcanvas.width, hcanvas.height);
-  if(!mouseCoords) return
+  if(!mouseCoords || oob(mouseCoords.x, mouseCoords.y)) return
   hctx.strokeStyle = '#000000';
   if(mouseDown) hctx.strokeStyle = '#FF0000';
   hctx.lineWidth = 2;
   hctx.beginPath();
-  hctx.rect((mouseCoords.x - xOff) * zoom, (mouseCoords.y - yOff) * zoom, zoom, zoom);
+  hctx.rect(mouseCoords.x * zoom - xOff, mouseCoords.y * zoom - yOff, zoom, zoom);
   hctx.stroke();
 }
 
 function draw() {
-  ctx.fillStyle = '#FFFFFF';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  pixels.forEach((pixel) => drawPixel(pixel));
-  localPixels.forEach((pixel) => drawPixel(pixel));
+  octx.fillStyle = '#FFFFFF';
+  octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
+  drawPixels(localPixels);
+  drawPixels(pixels);
+  setImage();
   drawHighlight();
 }
 
-function savePixels() {
-  localPixels.splice(0, resolved);
-  resolved = 0;
-  const index = localPixels.length;
 
-  if(localPixels.length > 0) {
-    const data = { pixels: localPixels };
-    const ops = {
-      headers: {
-        "content-type":"application/json",
-      },
-      body: JSON.stringify(data),
-      method: "POST",
-    };
-    fetch(`${url}/pixels`, ops)
-    .then((res) => {
-      if(res.status === 200) {
-        resolved = index;
-      } else {
-        console.log('error');
-      }
-    });
-  }
-}
-
-async function fetchPixels() {
-  const res = await fetch(`${url}/pixels`);
-  pixels = await res.json();
-  draw();
+function fetchPixels() {
+  const data = { pixels: localPixels };
+  const ops = {
+    headers: {
+      "content-type":"application/json",
+    },
+    body: JSON.stringify(data),
+    method: "POST",
+  };
+  return fetch(`${url}/pixels`, ops)
+  .then((res) => res.json())
+  .then((newPixels) => {
+    console.log('fetched');
+    pixels = newPixels;
+    draw();
+  });
 }
 
 function fillPixel(x, y, color) {
-  if(localPixels.length + 1 > MAX_LOCAL) return;
   if(localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
   const newPixel = { x, y, color };
   localPixels.push(newPixel);
@@ -117,10 +144,11 @@ function fillLine(prev, coords, color) {
 }
 
 function getCoords(mouseEvent) {
+  lastMouseEvent = mouseEvent;
   const rect = canvas.getBoundingClientRect();
   return {
-    x: Math.floor((event.clientX - rect.left)/zoom + xOff),
-    y: Math.floor((event.clientY - rect.top)/zoom + yOff),
+    x: Math.floor((mouseEvent.clientX - rect.left + xOff)/zoom),
+    y: Math.floor((mouseEvent.clientY - rect.top + yOff)/zoom),
   };
 }
 
@@ -152,48 +180,80 @@ function up(mouseEvent) {
 }
 
 function downCanvas(mouseEvent) {
+  if(mouseEvent.button !== 0) return;
   const coords = getCoords(mouseEvent);
   fillPixel(coords.x, coords.y, colorPicker.value);
   drawHighlight();
 }
 
+function moveCanvas() {
+  let shouldDraw = false;
+  if(keyStates.w) {
+    yOff -= speed;
+    shouldDraw = true;
+  }
+  if(keyStates.a) {
+    xOff -= speed;
+    shouldDraw = true;
+  }
+  if(keyStates.s) {
+    yOff += speed;
+    shouldDraw = true;
+  }
+  if(keyStates.d) {
+    xOff += speed;
+    shouldDraw = true;
+  }
+  if(shouldDraw) {
+    setMouseCoords(lastMouseEvent);
+    drawHighlight();
+    setImage();
+  }
+  window.requestAnimationFrame(moveCanvas);
+}
+
+function handleKey(keyEvent, down) {
+  switch(keyEvent.keyCode) {
+    case 87:
+      keyStates.w = down;
+      break;
+    case 65:
+      keyStates.a = down;
+      break;
+    case 83:
+      keyStates.s = down;
+      break;
+    case 68:
+      keyStates.d = down;
+      break;
+    default:
+      break;
+  }
+}
+
+hcanvas.addEventListener('mouseenter', (evt) => {
+  hcanvas.focus();
+  setMouseCoords(evt);
+});
+
 function zoomCanvas(wheelEvent) {
-  if(wheelEvent.deltaY < 0 && zoom < MAX_ZOOM) {
-    zoom += 1;
-  } else if(wheelEvent.deltaY > 0 && zoom > 1) {
-    zoom -= 1;
-  }
-  draw();
+  if(wheelEvent.deltaY < 0 && zoom < MAX_ZOOM) zoom += 1;
+  if(wheelEvent.deltaY > 0 && zoom > MIN_ZOOM) zoom -= 1;
+  setMouseCoords(lastMouseEvent);
+  drawHighlight();
+  setImage();
 }
 
-function moveCanvas(keyEvent) {
-  if(keyEvent.keyCode === 68) {
-    xOff += 1;
-  }
-  if(keyEvent.keyCode === 87) {
-    yOff -= 1;
-  }
-  if(keyEvent.keyCode === 65) {
-    xOff -= 1;
-  }
-  if(keyEvent.keyCode === 83) {
-    yOff += 1;
-  }
-  draw();
-}
-
-hcanvas.addEventListener('mouseenter', setMouseCoords);
 hcanvas.addEventListener('mousemove', setMouseCoords);
 hcanvas.addEventListener('mouseleave', unsetMouseCoords);
 hcanvas.addEventListener('mousedown', downCanvas);
+hcanvas.addEventListener('keydown', (evt) => handleKey(evt, true));
+hcanvas.addEventListener('keyup', (evt) => handleKey(evt, false));
 hcanvas.addEventListener('wheel', zoomCanvas);
-hcanvas.addEventListener('keydown', moveCanvas);
+
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
 fetchPixels();
-
-setInterval(() => {
-  savePixels();
-  fetchPixels();
-}, 500);
+setInterval(fetchPixels, 3000);
+window.requestAnimationFrame(moveCanvas);

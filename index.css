@@ -13,6 +13,15 @@ canvas {
   top:20px;
 }
 
+#canvas-bg {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 80%;
+  height: 80%;
+  background-color: #dcdce6;
+}
+
 #canvas {
   z-index: 1;
 }
