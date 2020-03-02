@@ -21,7 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.3';
+const VERSION = '1.0.4';
 
 const speed = 16;
 
@@ -49,7 +49,8 @@ function setImage() {
   const yScale = ocanvas.height * zoom;
   ctx.globalCompositeOperation = "copy";
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(ocanvas, -xOff, -yOff, xScale, yScale);
+  const pos = getPos(0, 0);
+  ctx.drawImage(ocanvas, pos.x, pos.y, ocanvas.width * zoom, ocanvas.height * zoom);
   ctx.globalCompositeOperation = "source-over"
 }
 
@@ -66,12 +67,18 @@ function oob(x, y) {
   return x < 0 || x > ocanvas.width || y < 0 || y > ocanvas.height;
 }
 
+function getPos(x, y) {
+  return {
+    x: Math.floor((x - xOff) * zoom + canvas.width/2),
+    y: Math.floor((y - yOff) * zoom + canvas.height/2),
+  };
+}
+
 function drawPixel(pixel) {
   if(oob(pixel.x, pixel.y)) return;
-  const xPos = pixel.x * zoom - xOff;
-  const yPos = pixel.y * zoom - yOff;
+  const pos = getPos(pixel.x, pixel.y);
   ctx.fillStyle = pixel.color;
-  ctx.fillRect(xPos, yPos, zoom, zoom);
+  ctx.fillRect(pos.x, pos.y, zoom, zoom);
   octx.fillStyle = pixel.color;
   octx.fillRect(pixel.x, pixel.y, 1, 1);
 }
@@ -82,8 +89,9 @@ function drawHighlight() {
   hctx.strokeStyle = '#000000';
   if(mouseDown) hctx.strokeStyle = '#FF0000';
   hctx.lineWidth = 2;
+  const pos = getPos(mouseCoords.x, mouseCoords.y);
   hctx.beginPath();
-  hctx.rect(mouseCoords.x * zoom - xOff, mouseCoords.y * zoom - yOff, zoom, zoom);
+  hctx.rect(pos.x, pos.y, zoom, zoom);
   hctx.stroke();
 }
 
@@ -156,10 +164,11 @@ function fillLine(prev, coords, color) {
 function getCoords(mouseEvent) {
   lastMouseEvent = mouseEvent;
   const rect = canvas.getBoundingClientRect();
-  return {
-    x: Math.floor((mouseEvent.clientX - rect.left + xOff)/zoom),
-    y: Math.floor((mouseEvent.clientY - rect.top + yOff)/zoom),
+  const res = {
+    x: Math.floor((mouseEvent.clientX - rect.left - canvas.width/2)/zoom + xOff),
+    y: Math.floor((mouseEvent.clientY - rect.top - canvas.height/2)/zoom + yOff),
   };
+  return res;
 }
 
 function setMouseCoords(mouseEvent) {
@@ -199,22 +208,26 @@ function downCanvas(mouseEvent) {
   }
 }
 
+function getSpeed() {
+  return speed/zoom;
+}
+
 function moveCanvas() {
   let shouldDraw = false;
   if(keyStates.w) {
-    yOff -= speed;
+    yOff -= getSpeed();
     shouldDraw = true;
   }
   if(keyStates.a) {
-    xOff -= speed;
+    xOff -= getSpeed();
     shouldDraw = true;
   }
   if(keyStates.s) {
-    yOff += speed;
+    yOff += getSpeed();
     shouldDraw = true;
   }
   if(keyStates.d) {
-    xOff += speed;
+    xOff += getSpeed();
     shouldDraw = true;
   }
   if(shouldDraw) {
@@ -265,8 +278,12 @@ hcanvas.addEventListener('mouseenter', (evt) => {
 });
 
 function zoomCanvas(wheelEvent) {
-  if(wheelEvent.deltaY < 0 && zoom < MAX_ZOOM) zoom += 1;
-  if(wheelEvent.deltaY > 0 && zoom > MIN_ZOOM) zoom -= 1;
+  if(wheelEvent.deltaY < 0 && zoom < MAX_ZOOM) {
+    zoom += 1;
+  }
+  if(wheelEvent.deltaY > 0 && zoom > MIN_ZOOM) {
+    zoom -= 1;
+  }
   setMouseCoords(lastMouseEvent);
   drawHighlight();
   setImage();
