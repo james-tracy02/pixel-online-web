@@ -21,7 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.4_1';
+const VERSION = '1.0.4_2';
 
 const speed = 16;
 
@@ -98,7 +98,7 @@ function drawHighlight() {
 
 function draw() {
   octx.fillStyle = '#FFFFFF';
-  octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
+  octx.fillRect(1, 1, ocanvas.width, ocanvas.height);
   drawPixels(localPixels);
   drawPixels(pixels);
   setImage();
