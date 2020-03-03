@@ -21,7 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.5';
+const VERSION = '1.0.5_2';
 
 const speed = 16;
 
@@ -115,6 +115,7 @@ function loadPixels() {
 }
 
 function fetchPixels() {
+  console.log('fetch');
   const i = localPixels.length;
   const data = { pixels: localPixels };
   const ops = {
@@ -130,6 +131,7 @@ function fetchPixels() {
     pixels = newPixels.concat(localPixels);
     localPixels.splice(0, i);
     draw();
+    setTimeout(fetchPixels, 500);
   });
 }
 
@@ -308,5 +310,5 @@ window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
 loadPixels();
-setInterval(fetchPixels, 10000);
+fetchPixels();
 window.requestAnimationFrame(moveCanvas);
