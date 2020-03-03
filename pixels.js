@@ -21,13 +21,14 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.5_2';
+const VERSION = '1.1.0';
+const UPDATE_MS = 500;
 
 const speed = 16;
 
 let zoom = 10;
-let xOff = Math.ceil(canvas.width/(2*zoom));
-let yOff = Math.ceil(canvas.height/(2*zoom));
+let xOff = Math.floor(canvas.width/(2*zoom));
+let yOff = Math.floor(canvas.height/(2*zoom));
 
 const keyStates = {
   w: false,
@@ -41,17 +42,21 @@ let mouseCoords = null;
 let prevCoords = null;
 let mouseDown = false;
 let localPixels = [];
-let pixels = [];
 
 
 function setImage() {
   const xScale = ocanvas.width * zoom;
   const yScale = ocanvas.height * zoom;
-  ctx.globalCompositeOperation = "copy";
+  ctx.globalCompositeOperation = 'copy';
   ctx.imageSmoothingEnabled = false;
   const pos = getPos(0, 0);
   ctx.drawImage(ocanvas, pos.x, pos.y, ocanvas.width * zoom, ocanvas.height * zoom);
-  ctx.globalCompositeOperation = "source-over"
+  ctx.globalCompositeOperation = 'source-over'
+}
+
+function drawbg() {
+  octx.fillStyle = '#ffffff';
+  octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
 }
 
 function drawPixels(pixels) {
@@ -96,26 +101,19 @@ function drawHighlight() {
   hctx.stroke();
 }
 
-function draw() {
-  octx.fillStyle = '#FFFFFF';
-  octx.fillRect(1, 1, ocanvas.width, ocanvas.height);
-  drawPixels(localPixels);
-  drawPixels(pixels);
-  setImage();
-  drawHighlight();
-}
-
 function loadPixels() {
+  console.log('loaded');
   return fetch(`${url}/pixels`)
   .then((res) => res.json())
   .then((newPixels) => {
-    pixels = newPixels;
-    draw();
+    drawbg();
+    drawPixels(newPixels);
+    setImage();
   });
 }
 
 function fetchPixels() {
-  console.log('fetch');
+  console.log(localPixels);
   const i = localPixels.length;
   const data = { pixels: localPixels };
   const ops = {
@@ -128,10 +126,10 @@ function fetchPixels() {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
-    pixels = newPixels.concat(localPixels);
+    drawPixels(newPixels);
+    drawPixels(localPixels);
     localPixels.splice(0, i);
-    draw();
-    setTimeout(fetchPixels, 500);
+    setTimeout(fetchPixels, UPDATE_MS);
   });
 }
 
