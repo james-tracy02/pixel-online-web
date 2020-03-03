@@ -102,7 +102,6 @@ function drawHighlight() {
 }
 
 function loadPixels() {
-  console.log('loaded');
   return fetch(`${url}/pixels`)
   .then((res) => res.json())
   .then((newPixels) => {
@@ -113,7 +112,6 @@ function loadPixels() {
 }
 
 function fetchPixels() {
-  console.log(localPixels);
   const i = localPixels.length;
   const data = { pixels: localPixels };
   const ops = {
