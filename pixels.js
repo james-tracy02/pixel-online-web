@@ -56,7 +56,7 @@ function setImage() {
 
 function drawbg() {
   octx.fillStyle = '#ffffff';
-  octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
+  octx.fillRect(1, 1, ocanvas.width, ocanvas.height);
 }
 
 function drawPixels(pixels) {
