@@ -58,13 +58,14 @@ function drawPixels(pixels) {
   let i;
   for(i = 0; i < pixels.length; i += 1) {
     const pixel = pixels[i];
+    if(oob(pixel.x, pixel.y)) continue;
     octx.fillStyle = pixel.color;
     octx.fillRect(pixel.x, pixel.y, 1, 1);
   }
 }
 
 function oob(x, y) {
-  return x < 0 || x > ocanvas.width || y < 0 || y > ocanvas.height;
+  return !x || !y || x < 0 || x > ocanvas.width || y < 0 || y > ocanvas.height;
 }
 
 function getPos(x, y) {
@@ -96,7 +97,7 @@ function drawHighlight() {
 }
 
 function draw() {
-  octx.fillStyle = '#FFFFFF';
+  octx.fillStyle = '#CCCCCC';
   octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
   drawPixels(localPixels);
   drawPixels(pixels);
