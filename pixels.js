@@ -97,7 +97,7 @@ function drawHighlight() {
 }
 
 function draw() {
-  octx.fillStyle = '#CCCCCC';
+  octx.fillStyle = '#FFFFFF';
   octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
   drawPixels(localPixels);
   drawPixels(pixels);
