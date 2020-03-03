@@ -21,7 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.0.4_2';
+const VERSION = '1.0.5';
 
 const speed = 16;
 
@@ -308,5 +308,5 @@ window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
 loadPixels();
-setInterval(fetchPixels, 3000);
+setInterval(fetchPixels, 10000);
 window.requestAnimationFrame(moveCanvas);
