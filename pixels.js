@@ -22,7 +22,7 @@ const penSize = document.getElementById('pen-size');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.4';
+const VERSION = '1.2.5';
 const UPDATE_MS = 3000;
 const MAX_PEN = 3;
 
@@ -45,6 +45,7 @@ let mouseCoords = null;
 let prevCoords = null;
 let mouseDown = false;
 let localPixels = [];
+let allowDrawing = false;
 
 
 function setImage() {
@@ -146,7 +147,7 @@ function penPixel(x, y, color) {
 }
 
 function fillPixel(x, y, color) {
-  if(localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
+  if(!allowDrawing || localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
   if(oob(x, y)) return;
   const newPixel = { x, y, color };
   localPixels.push(newPixel);
@@ -333,6 +334,10 @@ window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
 drawbg();
+setImage();
 fetchPixels()
-.then(() => setImage());
+.then(() => {
+  setImage()
+  allowDrawing = true;
+});
 window.requestAnimationFrame(moveCanvas);
