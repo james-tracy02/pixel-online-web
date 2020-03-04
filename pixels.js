@@ -21,7 +21,7 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const UPDATE_MS = 500;
 
 const speed = 16;
@@ -29,6 +29,7 @@ const speed = 16;
 let zoom = 10;
 let xOff = Math.floor(canvas.width/(2*zoom));
 let yOff = Math.floor(canvas.height/(2*zoom));
+let pixelIndex = 0;
 
 const keyStates = {
   w: false,
@@ -101,19 +102,13 @@ function drawHighlight() {
   hctx.stroke();
 }
 
-function loadPixels() {
-  return fetch(`${url}/pixels`)
-  .then((res) => res.json())
-  .then((newPixels) => {
-    drawbg();
-    drawPixels(newPixels);
-    setImage();
-  });
-}
 
 function fetchPixels() {
   const i = localPixels.length;
-  const data = { pixels: localPixels };
+  const data = {
+    pixels: localPixels,
+    index: pixelIndex,
+  };
   const ops = {
     headers: {
       "content-type":"application/json",
@@ -124,7 +119,9 @@ function fetchPixels() {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
-    drawPixels(newPixels);
+    console.log(newPixels);
+    pixelIndex = newPixels.index;
+    drawPixels(newPixels.pixels);
     drawPixels(localPixels);
     localPixels.splice(0, i);
     setTimeout(fetchPixels, UPDATE_MS);
@@ -305,6 +302,7 @@ hcanvas.addEventListener('wheel', zoomCanvas);
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 
-loadPixels();
-fetchPixels();
+drawbg();
+fetchPixels()
+.then(() => setImage());
 window.requestAnimationFrame(moveCanvas);
