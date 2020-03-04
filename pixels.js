@@ -18,11 +18,13 @@ hcanvas.tabIndex = 1000;
 hcanvas.style.outline = "none";
 hcanvas.focus();
 const colorPicker = document.getElementById('color-picker');
+const penSize = document.getElementById('pen-size');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.1';
+const VERSION = '1.2.3';
 const UPDATE_MS = 3000;
+const MAX_PEN = 5;
 
 const speed = 16;
 
@@ -71,7 +73,7 @@ function drawPixels(pixels) {
 }
 
 function oob(x, y) {
-  return !x || !y || x < 0 || x > ocanvas.width || y < 0 || y > ocanvas.height;
+  return !x || !y || x < 0 || x >= ocanvas.width || y < 0 || y >= ocanvas.height;
 }
 
 function getPos(x, y) {
@@ -91,14 +93,17 @@ function drawPixel(pixel) {
 }
 
 function drawHighlight() {
+  const pen = penSize.value;
+  if(isNaN(pen) || pen < 1 || pen > MAX_PEN) return;
+
   hctx.clearRect(0, 0, hcanvas.width, hcanvas.height);
   if(!mouseCoords || oob(mouseCoords.x, mouseCoords.y)) return
   hctx.strokeStyle = '#000000';
   if(mouseDown) hctx.strokeStyle = '#FF0000';
   hctx.lineWidth = 2;
-  const pos = getPos(mouseCoords.x, mouseCoords.y);
+  const pos = getPos(mouseCoords.x - Math.ceil(pen/2) + 1, mouseCoords.y - Math.ceil(pen/2) + 1);
   hctx.beginPath();
-  hctx.rect(pos.x, pos.y, zoom, zoom);
+  hctx.rect(pos.x, pos.y, zoom * pen, zoom * pen);
   hctx.stroke();
 }
 
@@ -119,7 +124,6 @@ function fetchPixels() {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
-    console.log(newPixels);
     pixelIndex = newPixels.index;
     drawPixels(newPixels.pixels);
     drawPixels(localPixels);
@@ -128,8 +132,22 @@ function fetchPixels() {
   });
 }
 
+function penPixel(x, y, color) {
+  const pen = parseInt(penSize.value);
+  if(isNaN(pen) || pen < 1 || pen > MAX_PEN) return;
+  const offset = Math.ceil(pen/2) - 1;
+  let i;
+  for(i = x - offset; i < x - offset + pen; i += 1) {
+    let j;
+    for(j = y - offset; j < y - offset + pen; j += 1) {
+      fillPixel(i, j, color);
+    }
+  }
+}
+
 function fillPixel(x, y, color) {
   if(localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
+  if(oob(x, y)) return;
   const newPixel = { x, y, color };
   localPixels.push(newPixel);
   drawPixel(newPixel);
@@ -144,7 +162,7 @@ function fillLine(prev, coords, color) {
     const slope = dy / dx;
     for(let t = start; t <= end; t += 1) {
       const y = Math.round(slope * (t - prev.x) + prev.y);
-      fillPixel(t, y, color);
+      penPixel(t, y, color);
     }
   } else if (Math.abs(dy) > 0){
     const start = Math.min(prev.y, coords.y);
@@ -152,7 +170,7 @@ function fillLine(prev, coords, color) {
     const slope = dx / dy;
     for(let t = start; t <= end; t += 1) {
       const x = Math.round(slope * (t - prev.y) + prev.x);
-      fillPixel(x, t, color);
+      penPixel(x, t, color);
     }
   }
 }
@@ -197,7 +215,7 @@ function up(mouseEvent) {
 function downCanvas(mouseEvent) {
   const coords = getCoords(mouseEvent);
   if(mouseEvent.button === 0) {
-    fillPixel(coords.x, coords.y, colorPicker.value);
+    penPixel(coords.x, coords.y, colorPicker.value);
     drawHighlight();
   } else if (mouseEvent.button === 2) {
     takePixel(coords.x, coords.y);
