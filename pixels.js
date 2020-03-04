@@ -22,7 +22,7 @@ const penSize = document.getElementById('pen-size');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.3';
+const VERSION = '1.2.4';
 const UPDATE_MS = 3000;
 const MAX_PEN = 3;
 
@@ -265,6 +265,18 @@ function handleKey(keyEvent, down) {
       break;
     case 68:
       keyStates.d = down;
+      break;
+    case 81:
+      if(!down && penSize.value > 1) {
+        penSize.value = parseInt(penSize.value) - 1;
+        drawHighlight();
+      }
+      break;
+    case 69:
+      if(!down && penSize.value < MAX_PEN) {
+        penSize.value = parseInt(penSize.value) + 1;
+        drawHighlight();
+      }
       break;
     default:
       break;
