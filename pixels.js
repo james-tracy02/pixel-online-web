@@ -21,8 +21,8 @@ const colorPicker = document.getElementById('color-picker');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.0';
-const UPDATE_MS = 500;
+const VERSION = '1.2.1';
+const UPDATE_MS = 3000;
 
 const speed = 16;
 
