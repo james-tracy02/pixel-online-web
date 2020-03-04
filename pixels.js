@@ -29,8 +29,8 @@ const MAX_PEN = 5;
 const speed = 16;
 
 let zoom = 10;
-let xOff = Math.floor(canvas.width/(2*zoom));
-let yOff = Math.floor(canvas.height/(2*zoom));
+let xOff = Math.ceil(canvas.width/(2*zoom));
+let yOff = Math.ceil(canvas.height/(2*zoom));
 let pixelIndex = 0;
 
 const keyStates = {
@@ -332,6 +332,7 @@ hcanvas.addEventListener('keyup', (evt) => handleKey(evt, false));
 hcanvas.addEventListener('wheel', zoomCanvas);
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
+window.addEventListener('resize', setImage());
 
 drawbg();
 setImage();
