@@ -24,7 +24,7 @@ const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
 const VERSION = '1.2.5';
 const UPDATE_MS = 3000;
-const MAX_PEN = 3;
+const MAX_PEN = 5;
 
 const speed = 16;
 
@@ -323,7 +323,7 @@ function download() {
 
 document.getElementById('save').addEventListener('click', download, false);
 document.getElementById('version').innerHTML =  `(Version ${VERSION})`;
-
+document.getElementById('max-pen').innerHTML = MAX_PEN;
 hcanvas.addEventListener('mousemove', setMouseCoords);
 hcanvas.addEventListener('mouseleave', unsetMouseCoords);
 hcanvas.addEventListener('mousedown', downCanvas);
