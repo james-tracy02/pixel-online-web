@@ -24,7 +24,7 @@ const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
 const VERSION = '1.2.3';
 const UPDATE_MS = 3000;
-const MAX_PEN = 5;
+const MAX_PEN = 3;
 
 const speed = 16;
 
