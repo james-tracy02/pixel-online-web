@@ -22,7 +22,7 @@ const penSize = document.getElementById('pen-size');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.5';
+const VERSION = '1.2.5_1';
 const UPDATE_MS = 3000;
 const MAX_PEN = 5;
 

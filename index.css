@@ -35,6 +35,9 @@ canvas {
   left: 20px;
   top: calc(20px + 80vh);
   padding: 20px;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #chat {
