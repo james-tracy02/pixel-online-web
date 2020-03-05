@@ -22,7 +22,7 @@ const penSize = document.getElementById('pen-size');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.6_1';
+const VERSION = '1.2.6_2';
 const UPDATE_MS = 3000;
 const MAX_PEN = 5;
 
@@ -332,6 +332,7 @@ hcanvas.addEventListener('mousedown', downCanvas);
 hcanvas.addEventListener('keydown', (evt) => handleKey(evt, true));
 hcanvas.addEventListener('keyup', (evt) => handleKey(evt, false));
 hcanvas.addEventListener('wheel', zoomCanvas);
+window.addEventListener('drag', () => mouseDown = false);
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 window.addEventListener('resize', setImage());
