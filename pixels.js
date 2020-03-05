@@ -228,7 +228,6 @@ function getSpeed() {
 }
 
 function moveCanvas() {
-  if(!loaded) return;
   let shouldDraw = false;
   if(keyStates.w) {
     yOff -= getSpeed();
@@ -255,6 +254,7 @@ function moveCanvas() {
 }
 
 function handleKey(keyEvent, down) {
+  if(!loaded) return;
   switch(keyEvent.keyCode) {
     case 87:
       keyStates.w = down;
