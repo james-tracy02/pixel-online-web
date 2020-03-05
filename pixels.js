@@ -22,7 +22,7 @@ const penSize = document.getElementById('pen-size');
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.5_1';
+const VERSION = '1.2.6_1';
 const UPDATE_MS = 3000;
 const MAX_PEN = 5;
 
@@ -45,7 +45,7 @@ let mouseCoords = null;
 let prevCoords = null;
 let mouseDown = false;
 let localPixels = [];
-let allowDrawing = false;
+let loaded = false;
 
 
 function setImage() {
@@ -147,7 +147,7 @@ function penPixel(x, y, color) {
 }
 
 function fillPixel(x, y, color) {
-  if(!allowDrawing || localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
+  if(!loaded || localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
   if(oob(x, y)) return;
   const newPixel = { x, y, color };
   localPixels.push(newPixel);
@@ -228,6 +228,7 @@ function getSpeed() {
 }
 
 function moveCanvas() {
+  if(!loaded) return;
   let shouldDraw = false;
   if(keyStates.w) {
     yOff -= getSpeed();
@@ -305,6 +306,7 @@ hcanvas.addEventListener('mouseenter', (evt) => {
 });
 
 function zoomCanvas(wheelEvent) {
+  if(!loaded) return;
   if(wheelEvent.deltaY < 0 && zoom < MAX_ZOOM) {
     zoom += 1;
   }
@@ -334,11 +336,14 @@ window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
 window.addEventListener('resize', setImage());
 
+ctx.font = '30px Arial';
+ctx.fillStyle = '#666666';
+ctx.fillText('Loading please wait...', canvas.width * 3 / 8, canvas.height / 2);
+
 drawbg();
-setImage();
 fetchPixels()
 .then(() => {
-  setImage()
-  allowDrawing = true;
+  setImage();
+  loaded = true;
 });
 window.requestAnimationFrame(moveCanvas);
