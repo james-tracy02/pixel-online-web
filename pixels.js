@@ -25,7 +25,7 @@ canvasbg.style.height = `${window.innerHeight * .8}px`;
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.6_2';
+const VERSION = '1.2.6_3';
 const UPDATE_MS = 3000;
 const MAX_PEN = 5;
 
