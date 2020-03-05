@@ -25,8 +25,8 @@ canvasbg.style.height = `${window.innerHeight * .8}px`;
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.6_3';
-const UPDATE_MS = 3000;
+const VERSION = '1.2.7';
+const UPDATE_MS = 50;
 const MAX_PEN = 5;
 
 const speed = 16;
@@ -131,6 +131,7 @@ function fetchPixels() {
     pixelIndex = newPixels.index;
     drawPixels(newPixels.pixels);
     drawPixels(localPixels);
+    setImage();
     localPixels.splice(0, i);
     setTimeout(fetchPixels, UPDATE_MS);
   });

@@ -4,6 +4,7 @@ body {
   padding: 20px;
   background-color: #1e1e24;
   font-family: "Arial";
+  font-size: 1em;
   color: #FFFFFF;
 }
 
@@ -31,8 +32,8 @@ canvas {
 #tools {
   position:absolute;
   left: 20px;
-  top: calc(20px + 80vh);
-  padding: 20px;
+  top: 84vh;
+  padding: 10px;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
