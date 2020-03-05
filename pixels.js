@@ -19,6 +19,9 @@ hcanvas.style.outline = "none";
 hcanvas.focus();
 const colorPicker = document.getElementById('color-picker');
 const penSize = document.getElementById('pen-size');
+const canvasbg = document.getElementById('canvas-bg');
+canvasbg.style.width = `${window.innerWidth * .8}px`;
+canvasbg.style.height = `${window.innerHeight * .8}px`;
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
@@ -323,6 +326,16 @@ function download() {
     this.href = dt;
 };
 
+function resize() {
+  canvas.width = window.innerWidth * .8;
+  canvas.height = window.innerHeight * .8;
+  hcanvas.width = window.innerWidth * .8;
+  hcanvas.height = window.innerHeight * .8;
+  canvasbg.style.width = `${window.innerWidth * .8}px`;
+  canvasbg.style.height = `${window.innerHeight * .8}px`;
+  setImage();
+}
+
 document.getElementById('save').addEventListener('click', download, false);
 document.getElementById('version').innerHTML =  `(Version ${VERSION})`;
 document.getElementById('max-pen').innerHTML = MAX_PEN;
@@ -335,7 +348,7 @@ hcanvas.addEventListener('wheel', zoomCanvas);
 window.addEventListener('drag', () => mouseDown = false);
 window.addEventListener('mousedown', down);
 window.addEventListener('mouseup', up);
-window.addEventListener('resize', setImage());
+window.addEventListener('resize', resize);
 
 ctx.font = '30px Arial';
 ctx.fillStyle = '#666666';
