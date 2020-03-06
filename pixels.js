@@ -8,7 +8,7 @@ const octx = ocanvas.getContext('2d');
 ocanvas.width = 1920;
 ocanvas.height = 1080;
 
-const url = 'http://localhost:8080';//"https://pixel-online.herokuapp.com";
+const url = 'https://pixel-online.herokuapp.com';
 const bgdiv = document.getElementById('canvas-bg');
 canvas.width = window.innerWidth * .8;
 canvas.height = window.innerHeight * .8;
