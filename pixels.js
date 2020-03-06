@@ -28,6 +28,7 @@ const MIN_ZOOM = 1;
 const VERSION = '1.2.7';
 const UPDATE_MS = 50;
 const MAX_PEN = 5;
+const FETCH_TIMEOUT = 5000;
 
 const speed = 16;
 
@@ -111,8 +112,21 @@ function drawHighlight() {
   hctx.stroke();
 }
 
+function warnTimeout() {
+  loaded = false;
+  ctx.fillStyle = '#dcdce6';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = '30px Arial';
+  ctx.fillStyle = '#FF6666';
+  ctx.fillText('Server not responding!', canvas.width * 3 / 8, canvas.height / 2);
+}
 
-function fetchPixels() {
+function fetchPixels(shouldTimeout) {
+  let timeout;
+  if(shouldTimeout) {
+    timeout = setTimeout(warnTimeout, FETCH_TIMEOUT);
+  }
+
   const i = localPixels.length;
   const data = {
     pixels: localPixels,
@@ -128,12 +142,13 @@ function fetchPixels() {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
+    if(shouldTimeout) clearTimeout(timeout);
     pixelIndex = newPixels.index;
     drawPixels(newPixels.pixels);
     drawPixels(localPixels);
     setImage();
     localPixels.splice(0, i);
-    setTimeout(fetchPixels, UPDATE_MS);
+    setTimeout(() => fetchPixels(true), UPDATE_MS);
   });
 }
 
@@ -356,7 +371,7 @@ ctx.fillStyle = '#666666';
 ctx.fillText('Loading please wait...', canvas.width * 3 / 8, canvas.height / 2);
 
 drawbg();
-fetchPixels()
+fetchPixels(false)
 .then(() => {
   setImage();
   loaded = true;
