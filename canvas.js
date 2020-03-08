@@ -30,7 +30,7 @@ const MIN_ZOOM = 1;
 const VERSION = '1.3.0';
 const UPDATE_MS = 50;
 const MAX_PEN = 7;
-const FETCH_TIMEOUT = 10000;
+const FETCH_TIMEOUT = 5000;
 
 const speed = 16;
 
