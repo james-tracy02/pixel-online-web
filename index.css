@@ -39,9 +39,16 @@ canvas {
   user-select: none;
 }
 
-#chat {
+#container {
   width: 100%;
   height: 80vh;
   float: left;
   background-color: #2a2a32;
+}
+
+#chat {
+  padding: 10px;
+  float: right;
+  width: calc(20vw - 60px);
+  height: 80vh;
 }

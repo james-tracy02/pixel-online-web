@@ -18,17 +18,19 @@ hcanvas.tabIndex = 1000;
 hcanvas.style.outline = "none";
 hcanvas.focus();
 const colorPicker = document.getElementById('color-picker');
+const lineColor = document.getElementById('line-color');
 const penSize = document.getElementById('pen-size');
 const canvasbg = document.getElementById('canvas-bg');
+const mode = document.getElementById('mode');
 canvasbg.style.width = `${window.innerWidth * .8}px`;
 canvasbg.style.height = `${window.innerHeight * .8}px`;
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.2.7';
+const VERSION = '1.3.0';
 const UPDATE_MS = 50;
-const MAX_PEN = 5;
-const FETCH_TIMEOUT = 5000;
+const MAX_PEN = 7;
+const FETCH_TIMEOUT = 10000;
 
 const speed = 16;
 
@@ -142,6 +144,7 @@ function fetchPixels(shouldTimeout) {
   return fetch(`${url}/pixels`, ops)
   .then((res) => res.json())
   .then((newPixels) => {
+    loaded = true;
     if(shouldTimeout) clearTimeout(timeout);
     pixelIndex = newPixels.index;
     drawPixels(newPixels.pixels);
@@ -166,7 +169,11 @@ function penPixel(x, y, color) {
 }
 
 function fillPixel(x, y, color) {
-  if(!loaded || localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
+  if(!loaded) return;
+  if(localPixels.find((pixel) => pixel.x === x && pixel.y === y && pixel.color === color)) return;
+  const pixelColor = takePixel(x, y);
+  if(mode.value === 'coloring' && pixelColor === lineColor.value) return;
+  if(mode.value === 'replace' && pixelColor !== lineColor.value) return;
   if(oob(x, y)) return;
   const newPixel = { x, y, color };
   localPixels.push(newPixel);
@@ -238,7 +245,11 @@ function downCanvas(mouseEvent) {
     penPixel(coords.x, coords.y, colorPicker.value);
     drawHighlight();
   } else if (mouseEvent.button === 2) {
-    takePixel(coords.x, coords.y);
+    if(mouseEvent.ctrlKey) {
+      lineColor.value = takePixel(coords.x, coords.y);
+    } else {
+      colorPicker.value = takePixel(coords.x, coords.y);
+    }
   }
 }
 
@@ -306,7 +317,7 @@ function handleKey(keyEvent, down) {
 
 function takePixel(x, y) {
   const color = octx.getImageData(x, y, 1, 1).data;
-  colorPicker.value = rgbToHex(color);
+  return rgbToHex(color);
 }
 
 function componentToHex(c) {

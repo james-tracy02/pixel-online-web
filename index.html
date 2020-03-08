@@ -6,22 +6,44 @@
   <link rel="icon" href="./favicon.png">
 </head>
 <body>
-  <div>
+  <div id="container">
+    <div id="canvas-bg">
+    </div>
+    <canvas id="canvas">
+    </canvas>
+    <canvas id="hcanvas" oncontextmenu="return false;">
+    </canvas>
     <div id="chat">
-      <div id="canvas-bg">
+      <div id="chat-tools">
+        <h3>Controls:</h3>
+        <p>Draw - Left Click</p>
+        <p>Pick Color - Right Click</p>
+        <p>Pick Target Color - Ctrl + Right Click</p>
+        <p>Change Pen Size - QE</p>
+        <p>Move Canvas - WASD</p>
+        <p>Zoom - Mouse Wheel</p>
+        <br />
+        <h3>Modes:</h3>
+        <p>Normal - Overwrite existing pixels regardless of their color.</p>
+        <p>Coloring - Overwrite all pixels except those which match target color. (Useful for filling in line-art.)</p>
+        <p>Replace - Overwrite only pixels which match target color. (Useful for mass-replacing a color.)</p>
+        <br />
+        <p><span id="version">Unknown Version</span></p>
       </div>
-      <canvas id="canvas">
-      </canvas>
-      <canvas id="hcanvas" oncontextmenu="return false;">
-      </canvas>
     </div>
   </div>
   <div id="tools">
-    Draw - Left Click | Pick Color - Right Click | Change Pen Size - QE | Move Canvas - WASD | Zoom - Mouse Wheel | <span id="version"></span><br /><br />
     Color: <input id="color-picker" type="color" value="#000000" /> &emsp;
     Pen Size (1-<span id="max-pen"></span>): <input id="pen-size" type="text" size="1" maxlength="1" value="1" /> &emsp;
+    Mode: <select id="mode">
+            <option value="normal">Normal</option>
+            <option value="coloring">Coloring</option>
+            <option value="replace">Replace</option>
+          </select>
+    &emsp;
+    Target Color: <input id="line-color" type="color" value="#000000" /> &emsp;
     Save Image: <button><a id="save" download="canvas.png">Download .png</a></button>
   </div>
-  <script src="./pixels.js"></script>
+  <script src="./canvas.js"></script>
 </body>
 </html>
