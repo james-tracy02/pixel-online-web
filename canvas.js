@@ -129,7 +129,6 @@ function fetchImage() {
   .then((data) => {
     const img = new Image();
     img.onload = () => {
-      console.log('hewwo');
       octx.drawImage(img, 0, 0); // Or at whatever offset you like
       setImage();
     }
@@ -144,7 +143,6 @@ function fetchPixels(shouldTimeout) {
   }
 
   const i = localPixels.length;
-  console.log(i);
   const data = {
     pixels: localPixels,
     index: pixelIndex,
