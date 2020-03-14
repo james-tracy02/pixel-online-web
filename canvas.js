@@ -27,7 +27,7 @@ canvasbg.style.height = `${window.innerHeight * .8}px`;
 
 const MAX_ZOOM = 40;
 const MIN_ZOOM = 1;
-const VERSION = '1.3.0_1';
+const VERSION = '1.4.0';
 const UPDATE_MS = 50;
 const MAX_PEN = 7;
 const FETCH_TIMEOUT = 5000;
@@ -123,6 +123,20 @@ function warnTimeout() {
   ctx.fillText('Server not responding!', canvas.width * 3 / 8, canvas.height / 2);
 }
 
+function fetchImage() {
+  return fetch(`${url}/pixels`)
+  .then((res) => res.text())
+  .then((data) => {
+    const img = new Image();
+    img.onload = () => {
+      console.log('hewwo');
+      octx.drawImage(img, 0, 0); // Or at whatever offset you like
+      setImage();
+    }
+    img.src = data;
+  });
+}
+
 function fetchPixels(shouldTimeout) {
   let timeout;
   if(shouldTimeout) {
@@ -130,6 +144,7 @@ function fetchPixels(shouldTimeout) {
   }
 
   const i = localPixels.length;
+  console.log(i);
   const data = {
     pixels: localPixels,
     index: pixelIndex,
@@ -382,9 +397,10 @@ ctx.fillStyle = '#666666';
 ctx.fillText('Loading please wait...', canvas.width * 3 / 8, canvas.height / 2);
 
 drawbg();
-fetchPixels(false)
+fetchImage()
 .then(() => {
-  setImage();
   loaded = true;
+  fetchPixels();
 });
+
 window.requestAnimationFrame(moveCanvas);
