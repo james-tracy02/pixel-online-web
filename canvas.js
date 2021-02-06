@@ -66,7 +66,7 @@ function setImage() {
 
 function drawbg() {
   octx.fillStyle = '#ffffff';
-  octx.fillRect(1, 1, ocanvas.width, ocanvas.height);
+  octx.fillRect(0, 0, ocanvas.width, ocanvas.height);
 }
 
 function drawPixels(pixels) {
@@ -80,7 +80,7 @@ function drawPixels(pixels) {
 }
 
 function oob(x, y) {
-  return !x || !y || x < 0 || x >= ocanvas.width || y < 0 || y >= ocanvas.height;
+  return (x != 0 && !x) || (y != 0 && !y) || x < 0 || x >= ocanvas.width || y < 0 || y >= ocanvas.height;
 }
 
 function getPos(x, y) {
